@@ -1,30 +1,48 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div :class="{'dark': darkMode}">
+    <!-- Your main layout -->
+    <div>
+      <header>
+        <!-- Pass darkMode and toggleDarkMode as props -->
+        <Navbar :darkMode="darkMode" @toggleDarkMode="toggleDarkMode" />
+      </header>
+      <main>
+        <router-view :darkMode="darkMode" :toggleDarkMode="toggleDarkMode" />
+      </main>
+    </div>
+  </div>
 </template>
 
+<script>
+import Navbar from '@/Layout/Navbar.vue'
+export default {
+  component:{
+    Navbar
+  },
+  data() {
+    return {
+      darkMode: false, // Initial state
+    };
+  },
+  methods: {
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode;
+      document.body.classList.toggle('dark', this.darkMode); // Apply/remove dark class on body
+    },
+  },
+};
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+/* Global light mode styles */
+/* body {
+  background-color: white;
+  color: black;
 }
 
-nav {
-  padding: 30px;
-}
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
+body.dark {
+  background-color: #15202b;
+  color: #e1e8ed;
+} */
 </style>
