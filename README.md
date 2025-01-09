@@ -22,3 +22,4 @@ npm run test:e2e
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+# bezal
