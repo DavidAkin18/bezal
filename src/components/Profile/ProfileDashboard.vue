@@ -1,16 +1,17 @@
 <template>
-  <div :class="{ 'dark': darkMode }" class="w-full flex justify-center items-center py-4 bg-white dark:bg-[#2d3748]">
+  <div :class="{ 'dark': theme === 'dark' }" class="w-full flex justify-center items-center py-4">
     <div class="w-full max-w-4xl">
-      <div class="flex bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl justify-between gap-3 overflow-x-auto mb-6">
+      <div
+        class="flex bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl justify-between gap-3 overflow-x-auto mb-6"
+      >
         <button
           v-for="filter in filters"
           :key="filter.id"
           @click="setFilter(filter.type)"
-          class="bg-[#FAFAFA] dark:bg-[#2d3748] text-gray-600 dark:text-[#ffffff] hover:bg-gray-300 dark:hover:bg-[#4a5568] font-medium py-1 px-2 rounded transition"
-          :class="{
-            'bg-blue-600 text-white': currentFilter === filter.type, 
-            'dark:bg-blue-600': currentFilter === filter.type
-          }"
+          :class="[
+            'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 font-medium py-1 px-2 rounded transition',
+            currentFilter === filter.type && 'bg-blue-600 text-white dark:bg-blue-600'
+          ]"
         >
           {{ filter.label }}
         </button>
@@ -18,10 +19,10 @@
 
       <div v-if="filteredPosts.length">
         <div v-for="post in filteredPosts" :key="post.id" class="mb-6">
-          <PostItem :post="post" @deletePost="handleDeletePost" />
+          <PostItem  :post="post" @deletePost="handleDeletePost" :theme="theme" />
         </div>
       </div>
-      <div v-else class="text-gray-600 dark:text-[#ffffff] text-center py-4">
+      <div v-else class="text-gray-600 dark:text-white text-center py-4">
         <p>No posts available for this filter.</p>
       </div>
     </div>
@@ -34,6 +35,12 @@ import { useStore } from 'vuex';
 import PostItem from '../Home/PostItem.vue';
 
 export default defineComponent({
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     PostItem,
   },
@@ -93,50 +100,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Base Transition */
-button {
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* Active Filter */
-button.bg-blue-600 {
-  background-color: #3b82f6; /* Blue for active */
-  color: white;
-}
-
-/* Hover Effect */
-button:hover.bg-[#FAFAFA]:not(.bg-blue-600) {
-  background-color: #e5e7eb;
-}
-
-/* Light Mode Adjustments */
-.bg-[#FAFAFA] {
-  background-color: #f9fafb;
-}
-
-/* Dark Mode Styles */
-.dark {
-  background-color: #2d3748;
-  color: #ffffff;
-}
-
-.dark .bg-[#2d3748] {
-  background-color: #2d3748;
-}
-
-.dark .text-[#ffffff] {
-  color: #ffffff;
-}
-
-.dark .hover\:bg-[#4a5568]:hover {
-  background-color: #4a5568;
-}
-
-.dark .bg-blue-600 {
-  background-color: #3b82f6; /* Active button blue in dark mode */
-}
-
-.dark .text-gray-600 {
-  color: #ffffff;
-}
+/* No scoped styles, Tailwind handles everything */
 </style>

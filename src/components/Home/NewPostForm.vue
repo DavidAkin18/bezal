@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'dark': darkMode }" class="bg-white">
+  <div :class="{ dark: theme ==='dark' }" class="bg-white rounded-lg ">
     <div
       @click="showTextarea = !showTextarea"
       class="text-4xl fixed md:hidden z-50 bottom-20 right-0 m-6 px-3 py-1 text-white bg-blue-700 rounded-full"
@@ -11,14 +11,14 @@
     <div
       v-if="showTextarea || isLargeScreen"
       class="p-4 rounded-lg mx-auto"
-      :class="darkMode ? 'bg-[#1a202c] text-gray-100' : 'bg-gray-100 text-gray-800'"
+      :class="theme === 'dark' ? 'bg-[#1a202c] text-gray-100' : 'bg-gray-100 text-gray-800'"
     >
       <!-- Textarea for Content -->
       <textarea
         v-model="postContent"
         placeholder="What's on your mind?"
         class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300 mb-2 text-sm"
-        :class="darkMode ? 'bg-[#121212] text-white placeholder-gray-400' : ''"
+        :class="theme === 'dark' ? 'bg-[#121212] text-white placeholder-gray-400' : ''"
         ref="textarea"
       ></textarea>
 
@@ -70,7 +70,7 @@
         <button
           @click="triggerFileInput('image')"
           class="text-xl p-1 rounded-full"
-          :class="darkMode ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
+          :class="theme ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
           :disabled="postImages.length >= 4"
         >
           <i class="ri-image-2-line"></i>
@@ -80,7 +80,7 @@
         <button
           @click="triggerFileInput('video')"
           class="text-xl p-1 rounded-full"
-          :class="darkMode ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
+          :class="theme ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
           :disabled="postVideos.length >= 1"
         >
           <i class="ri-video-line"></i>
@@ -90,7 +90,7 @@
         <button
           @click="toggleGifPicker"
           class="text-xl p-1 rounded-full"
-          :class="darkMode ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
+          :class="theme ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
         >
           <i class="ri-file-gif-fill"></i>
         </button>
@@ -99,19 +99,10 @@
         <button
           @click="toggleEmojiPicker"
           class="text-xl p-1 rounded-full"
-          :class="darkMode ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
+          :class="theme ? 'hover:bg-blue-600 text-gray-300' : 'hover:bg-blue-200 text-gray-800'"
         >
           <i class="ri-emoji-sticker-line"></i>
         </button>
-
-        <!-- Dark Mode Toggle Button -->
-        <!-- <button
-          @click="toggleDarkMode"
-          class="text-xl p-1 rounded-full"
-          :class="darkMode ? 'hover:bg-blue-600 text-yellow-400' : 'hover:bg-blue-200 text-gray-800'"
-        >
-          <i :class="darkMode ? 'ri-moon-fill' : 'ri-sun-fill'"></i>
-        </button> -->
       </div>
 
       <!-- GIF Picker Modal -->
@@ -122,7 +113,7 @@
         class="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex items-center justify-center"
       >
         <div
-          :class="darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'"
+          :class="theme ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'"
           class="p-4 rounded-md w-11/12 md:w-1/2 min-h-80 overflow-y-auto"
         >
           <div class="flex items-center mb-4">
@@ -130,7 +121,7 @@
               v-model="gifSearchQuery"
               @input="searchGifs"
               placeholder="Search for GIFs"
-              :class="darkMode ? 'bg-gray-900 text-gray-100 placeholder-gray-400' : ''"
+              :class="theme ? 'bg-gray-900 text-gray-100 placeholder-gray-400' : ''"
               class="flex-grow p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
             />
             <button @click="closeGifPicker" class="ml-2 text-red-500">
@@ -154,7 +145,7 @@
       <div
         v-if="showEmojiPicker"
         class="absolute mt-2 z-10 p-2 shadow-lg rounded-md w-72 max-h-60 overflow-y-auto"
-        :class="darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'"
+        :class="theme ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'"
       >
         <div v-for="(emojiGroup, groupName) in emojis" :key="groupName" class="mb-4">
           <h4 class="text-sm font-semibold">{{ groupName }}</h4>
@@ -164,7 +155,7 @@
               :key="emoji"
               @click="addEmoji(emoji)"
               class="cursor-pointer text-lg p-1 rounded"
-              :class="darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200'"
+              :class="theme ? 'hover:bg-gray-700' : 'hover:bg-gray-200'"
             >
               {{ emoji }}
             </span>
@@ -181,7 +172,7 @@
       <!-- Submit Button -->
       <button
         @click="submitPost"
-        :class="darkMode ? 'bg-blue-600 hover:bg-blue-700 text-gray-100' : 'bg-blue-500 hover:bg-blue-600 text-white'"
+        :class="theme ? 'bg-blue-600 hover:bg-blue-700 text-gray-100' : 'bg-blue-500 hover:bg-blue-600 text-white'"
         class="px-3 py-1 rounded text-sm w-full"
       >
         Post
@@ -191,16 +182,22 @@
 </template>
 
 
+
 <script>
-import { ref, nextTick, computed } from "vue";
+import { ref, nextTick, computed,  } from "vue";
 import { useStore } from "vuex";
 import axios from "axios"; // Import axios for making API requests
 
 export default {
   name: "NewPostItem",
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+  },
   setup() {
     const store = useStore();
-    const darkMode = computed(()=> store.state.darkMode);
     
     const postContent = ref("");
     const postImages = ref([]);
@@ -328,10 +325,13 @@ export default {
     const submitPost = () => {
       if (!postContent.value.trim() && !postImages.value.length && !postVideos.value.length) return;
 
+      const timestamp = new Date();
+
       store.dispatch("addPost", {
         content: postContent.value,
         images: postImages.value,
         videos: postVideos.value,
+        timestamp,
       });
 
       postContent.value = "";
@@ -366,7 +366,6 @@ export default {
       showTextarea,
       isLargeScreen,
       submitPost,
-      darkMode, 
     };
   },
 };
@@ -374,53 +373,3 @@ export default {
 
 
 
-<style scoped>
-/* Dark Mode Customizations */
-.dark .bg-white {
-  background-color: #2d3748; /* Dark background for white elements */
-}
-
-.dark .bg-gray-900 {
-  background-color: #2d3748; /* Dark background for sections */
-}
-
-.dark .bg-gray-800 {
-  background-color: #2d3748; /* Dark background for gray elements */
-}
-
-.dark .text-gray-100 {
-  color: #f7fafc; /* Light text for dark mode */
-}
-
-.dark .text-gray-300 {
-  color: #e2e8f0; /* Lighter text */
-}
-
-.dark .text-gray-800 {
-  color: #2d3748; /* Default text color for light mode */
-}
-
-.dark .bg-blue-600 {
-  background-color: #3182ce; /* Blue background for buttons */
-}
-
-.dark .bg-blue-500 {
-  background-color: #4299e1; /* Lighter blue for light mode */
-}
-
-.dark .bg-gray-900 {
-  background-color: #1a202c; /* Dark background for elements */
-}
-
-.dark .bg-gray-800 {
-  background-color: #2d3748; /* Dark background for input boxes */
-}
-
-.dark .text-gray-100 {
-  color: #f7fafc; /* White text for dark mode */
-}
-
-.bg-gray-800 {
-  background-color: #2d3748;
-}
-</style>

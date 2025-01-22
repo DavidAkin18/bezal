@@ -1,30 +1,67 @@
 <template>
-  <div :class="{ 'dark': darkMode }" class="space-y-4">
+  <div :class="{ 'dark': theme === 'dark' }" class="space-y-4">
     <!-- Trending Section -->
-    <div :class="{'bg-white': !darkMode, 'bg-gray-800': darkMode}" class="p-4 rounded-lg shadow">
-      <h3 :class="{'text-gray-700': !darkMode, 'text-gray-100': darkMode}" class="font-bold text-lg">Trending</h3>
+    <div
+      :class="theme === 'dark' ? 'bg-[#2d3748] text-[#e2e8f0]' : 'bg-[#f7fafc] text-[#1a202c]'"
+      class="p-4 rounded-lg shadow"
+    >
+      <h3
+        :class="theme === 'dark' ? 'text-[#ffffff]' : 'text-[#1a202c]'"
+        class="font-bold text-lg"
+      >
+        Trending
+      </h3>
       <ul class="mt-4 space-y-2">
-        <li v-for="topic in trendingTopics" :key="topic.id" class="flex justify-between">
-          <span :class="{'text-gray-700': !darkMode, 'text-gray-100': darkMode}">#{{ topic.name }}</span>
-          <span :class="{'text-gray-500': !darkMode, 'text-gray-200': darkMode}">{{ topic.posts }} posts</span>
+        <li
+          v-for="topic in trendingTopics"
+          :key="topic.id"
+          class="flex justify-between"
+        >
+          <span
+            :class="theme === 'dark' ? 'text-[#e2e8f0]' : 'text-[#1a202c]'"
+          >
+            #{{ topic.name }}
+          </span>
+          <span
+            :class="theme === 'dark' ? 'text-[#a0aec0]' : 'text-[#718096]'"
+          >
+            {{ topic.posts }} posts
+          </span>
         </li>
       </ul>
     </div>
 
     <!-- Explore Section -->
-    <div :class="{'bg-white': !darkMode, 'bg-gray-800': darkMode}" class="mt-8 space-y-4 shadow-lg rounded-lg p-4 flex flex-col items-start">
-      <h3 :class="{'text-gray-700': !darkMode, 'text-gray-300': darkMode}" class="font-bold">Explore</h3>
-      <div class="flex items-center space-x-2 text-gray-500 hover:text-gray-700">
+    <div
+      :class="theme === 'dark' ? 'bg-[#2d3748] text-[#e2e8f0]' : 'bg-[#f7fafc] text-[#1a202c]'"
+      class="mt-8 space-y-4 shadow rounded-lg p-4 flex flex-col items-start"
+    >
+      <h3
+        :class="theme === 'dark' ? 'text-[#ffffff]' : 'text-[#1a202c]'"
+        class="font-bold"
+      >
+        Explore
+      </h3>
+      <div
+        class="flex items-center space-x-2 cursor-pointer"
+        :class="theme === 'dark' ? 'text-[#a0aec0] hover:text-[#e2e8f0]' : 'text-[#718096] hover:text-[#1a202c]'"
+      >
         <i class="ri-store-line"></i>
-        <span :class="{'text-gray-700': !darkMode, 'text-gray-300': darkMode}">Marketplace</span>
+        <span>Marketplace</span>
       </div>
-      <div class="flex items-center space-x-2 text-gray-500 hover:text-gray-700">
+      <div
+        class="flex items-center space-x-2 cursor-pointer"
+        :class="theme === 'dark' ? 'text-[#a0aec0] hover:text-[#e2e8f0]' : 'text-[#718096] hover:text-[#1a202c]'"
+      >
         <i class="ri-wallet-line"></i>
-        <span :class="{'text-gray-700': !darkMode, 'text-gray-300': darkMode}">Wallet</span>
+        <span>Wallet</span>
       </div>
-      <div class="flex items-center space-x-2 text-gray-500 hover:text-gray-700">
+      <div
+        class="flex items-center space-x-2 cursor-pointer"
+        :class="theme === 'dark' ? 'text-[#a0aec0] hover:text-[#e2e8f0]' : 'text-[#718096] hover:text-[#1a202c]'"
+      >
         <i class="ri-briefcase-line"></i>
-        <span :class="{'text-gray-700': !darkMode, 'text-gray-300': darkMode}">Jobs</span>
+        <span>Jobs</span>
       </div>
     </div>
   </div>
@@ -40,36 +77,15 @@ export default {
       ],
     };
   },
-  computed: {
-    darkMode() {
-      return this.$store.state.darkMode;
+  props: {
+    theme: {
+      type: String,
+      required: true,
     },
   },
 };
 </script>
 
 <style scoped>
-.dark .bg-white {
-  background-color: #2d3748; /* Dark background for white elements */
-}
-
-.dark .text-gray-700 {
-  color: #e2e8f0; /* Light gray text for dark mode */
-}
-
-.dark .text-gray-500 {
-  color: #a0aec0; /* Adjust gray text color */
-}
-
-.dark .text-gray-300 {
-  color: #cbd5e0; /* Lighter gray text for dark mode */
-}
-
-.dark .text-gray-400 {
-  color: #e2e8f0; /* Lighter gray for dark mode posts count */
-}
-
-.dark .shadow {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adjust shadow for dark mode */
-}
+/* Custom Tailwind-like adjustments if needed */
 </style>

@@ -1,17 +1,17 @@
 <template>
-  <div :class="{ 'dark': darkMode }" class="max-w-3xl mx-auto space-y-4">
+  <div :class="{ 'dark': theme === 'dark' }" class="max-w-3xl mx-auto flex gap-2 flex-col space-y-4   ">
     <!-- New Post Form -->
-    <NewPostForm @new-post="addPost" />
-
+    <NewPostForm @new-post="addPost" :theme="theme"  class="border"/>
+    
     <!-- Posts List -->
-    <div v-if="posts.length" :class="{'bg-white': !darkMode, 'bg-gray-900': darkMode}">
-      <PostItem
+    <div v-if="posts.length" :class="{'bg-white': theme === 'light', 'bg-gray-900': theme === 'dark'}">
+      <PostItem 
         v-for="post in posts"
         :key="post.id"
         :post="post"
         @toggle-comments="toggleComments"
         @delete-post="handleDeletePost"
-        :darkMode="darkMode"
+        :theme="theme"
       />
     </div>
     <p v-else class="text-center text-gray-500">No posts yet. Be the first to share something!</p>
@@ -28,11 +28,16 @@ import PostItem from "./PostItem.vue";
 import SharePostModal from "./SharePostModal.vue";
 
 export default {
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+  },
   components: { PostItem, CommentSection, NewPostForm, SharePostModal },
   setup() {
     const store = useStore<State>();
 
-    const darkMode = computed(() => store.state.darkMode);
     const posts = computed(() => store.state.posts);
 
     const activePostId = ref<number | null>(null);
@@ -47,7 +52,7 @@ export default {
         images: post.images || [],
         videos: post.videos || [],
         type: post.type || 'default',
-        content: post.content || ""
+        content: post.content || "",
       };
       store.dispatch("addPost", newPost);
     };
@@ -65,6 +70,8 @@ export default {
       const index = posts.value.findIndex(post => post.id === postId);
       if (index !== -1) {
         posts.value.splice(index, 1); // Remove the post from the local posts array
+
+        localStorage.removeItem(`post-${postId}`);
       }
     };
 
@@ -77,7 +84,6 @@ export default {
       toggleComments,
       getPostComments,
       handleDeletePost,
-      darkMode, // Expose darkMode to be used in the template
     };
   },
 };
@@ -108,7 +114,7 @@ export default {
 .dark .text-center {
   color: #e2e8f0; /* Light text for the "No posts yet" message */
 }
-.dark .border {
+/* .dark .border {
   border-color: #ffffff;
-}
+} */
 </style>

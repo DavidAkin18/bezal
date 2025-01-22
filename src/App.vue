@@ -1,48 +1,54 @@
 <template>
-  <div :class="{'dark': darkMode}">
+  <div :class="{ 'dark': theme === 'dark' }">
     <!-- Your main layout -->
     <div>
       <header>
-        <!-- Pass darkMode and toggleDarkMode as props -->
-        <Navbar :darkMode="darkMode" @toggleDarkMode="toggleDarkMode" />
+        <!-- Navbar component -->
+        
       </header>
       <main>
-        <router-view :darkMode="darkMode" :toggleDarkMode="toggleDarkMode" />
+        <router-view :theme="theme" @toggle-theme="toggleTheme" @toggle-search="toggleSearch" :search="search"  />
       </main>
     </div>
   </div>
 </template>
 
 <script>
-import Navbar from '@/Layout/Navbar.vue'
 export default {
-  component:{
-    Navbar
-  },
   data() {
     return {
-      darkMode: false, // Initial state
-    };
+      theme: this.getSavedTheme() || 'light', // Default theme is 'light'
+      search:false,
+    }
   },
   methods: {
-    toggleDarkMode() {
-      this.darkMode = !this.darkMode;
-      document.body.classList.toggle('dark', this.darkMode); // Apply/remove dark class on body
+    toggleTheme() {
+      console.log("Toggling theme in App.vue. Previous theme:", this.theme);
+      this.theme = this.theme === 'light' ? 'dark' : 'light';
+      this.saveTheme(this.theme);
+      console.log("New theme:", this.theme);
+    },
+    toggleSearch(){
+      this.search =!this.search
+    },
+    saveTheme(theme) {
+      console.log("Saving theme to localStorage:", theme);
+      localStorage.setItem('theme', theme);
+    },
+    getSavedTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      console.log("Retrieved theme from localStorage:", savedTheme);
+      return savedTheme;
     },
   },
+  
 };
 </script>
 
 <style>
-/* Global light mode styles */
-/* body {
-  background-color: white;
-  color: black;
-}
-
-
-body.dark {
+/* Add any dark mode styles here */
+.dark {
   background-color: #15202b;
   color: #e1e8ed;
-} */
+}
 </style>

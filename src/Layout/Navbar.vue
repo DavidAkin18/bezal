@@ -1,32 +1,52 @@
 <template>
-  <div class="bg-white shadow-lg fixed z-50 top-0 w-full border
-     border-b-blue-400 p-4 px-12 flex items-center justify-between">
+  <div 
+    class="fixed z-50 top-0 w-full border p-4 px-12 flex items-center justify-between shadow-md"
+    :class="{
+      'bg-white text-gray-800 border-b-blue-400': theme !== 'dark',
+      'bg-[#15202b] text-gray-100 border-0 border-b border-b-white': theme === 'dark'
+    }"
+  >
     <!-- Left: Logo -->
     <router-link to="/home">
       <div class="flex items-center space-x-2">
         <img src="../assets/images/bezal.png" alt="Logo" class="h-8" />
       </div>
     </router-link>
+
     <!-- Center: Search Bar -->
-    <div class="hidden lg:flex items-center bg-gray-100 rounded-lg w-3/5 border-4 px-4 py-2 mx-4">
-      <i class="ri-search-line text-gray-500"></i>
+    <div 
+      v-if="search"
+      class="hidden lg:flex items-center rounded-lg w-3/5 px-4 py-2 mx-4"
+      :class="{
+        'bg-gray-100 text-gray-700': theme !== 'dark',
+        'bg-gray-700 text-gray-300': theme === 'dark'
+      }"
+    >
+      <i class="ri-search-line" :class="theme === 'dark' ? 'text-gray-300' : 'text-gray-500'"></i>
       <input
         type="text"
         placeholder="Search"
-        class="bg-transparent flex-1 focus:outline-none px-2 text-gray-700"
+        class="bg-transparent flex-1 focus:outline-none px-2"
+        :class="{
+          'text-gray-700': theme !== 'dark',
+          'text-white': theme === 'dark'
+        }"
       />
     </div>
-    
-   
+
     <!-- Right: Icons and Profile -->
     <div class="flex items-center space-x-4">
       <!-- Dark Mode Toggle -->
-      <div class="cursor-pointer" @click="toggleDarkMode">
-        <i
-          class="ri-lightbulb-fill text-2xl"
-          :class="{'text-yellow-400': !darkMode, 'text-gray-400': darkMode}"
-        ></i>
+      <div
+        class="cursor-pointer transition-colors duration-300"
+        @click="handleToggleTheme"
+        :class="theme === 'dark' ? 'text-yellow-400' : 'text-gray-400'"
+      >
+        <i v-if="theme === 'dark'" class="ri-sun-fill text-lg"></i>
+        <i v-else class="ri-moon-fill text-lg"></i>
       </div>
+
+      <!-- Profile Section -->
       <div class="flex items-center space-x-2 cursor-pointer">
         <router-link to="/profile">
           <img
@@ -35,7 +55,15 @@
             class="w-8 h-8 rounded-full"
           />
         </router-link>
-        <span class="hidden lg:block text-gray-700 font-medium">@{{ profile.username || 'Guest' }}</span>
+        <span
+          class="hidden lg:block font-bold"
+          :class="{
+            'text-gray-700': theme !== 'dark',
+            'text-white': theme === 'dark'
+          }"
+        >
+          @{{ profile.username || 'Guest' }}
+        </span>
       </div>
     </div>
   </div>
@@ -45,61 +73,35 @@
 import { mapState } from 'vuex';
 
 export default {
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+    search: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  methods: {
+    handleToggleTheme() {
+      console.log('Theme toggle button clicked. Current theme:', this.theme);
+      this.$emit('toggle-theme');
+    },
+  },
   computed: {
     ...mapState({
       profile: (state) => state.profile,
-      darkMode() {
-        return this.$store.getters.darkMode; // Access the darkMode state from Vuex
-      },
     }),
   },
-  methods: {
-    toggleDarkMode() {
-      this.$store.dispatch('toggleDarkMode'); // Dispatch the action to toggle dark mode in Vuex
-    },
-  },
   watch: {
-    darkMode(newValue) {
-      const html = document.documentElement;
-      if (newValue) {
-        html.classList.add('dark');
-      } else {
-        html.classList.remove('dark');
-      }
+    theme(newTheme) {
+      console.log("Navbar.vue - theme prop changed:", newTheme);
     },
-  },
-  mounted() {
-    // Sync with localStorage on mount to initialize dark mode state
-    const darkMode = localStorage.getItem('darkMode') === 'true';
-    if (darkMode) {
-      this.$store.commit('toggleDarkMode'); // Sync Vuex state if dark mode was enabled in localStorage
-    }
   },
 };
 </script>
 
 <style scoped>
-/* Default light mode styles */
-body {
-  background-color: white;
-  color: black;
-}
-
-/* Dark mode styles */
-body.dark {
-  background-color: #15202b;
-  color: #e1e8ed;
-}
-
-.dark .bg-white {
-  background-color: #1c1f26;
-}
-
-.dark .text-gray-700 {
-  color: #e1e8ed;
-}
-
-.dark .text-gray-400 {
-  color: #8899a6;
-}
+/* All styling handled by Tailwind */
 </style>

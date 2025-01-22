@@ -1,6 +1,8 @@
 <template>
-  <div :class="{ 'dark': darkMode }" class="fixed border-l-0  mt-20 text-gray-500 
-  border border-r-blue-400  bg-white min-h-screen shadow-md">
+  <div 
+    class="fixed border-l-0 mt-16 text-gray-500 border border-r-blue-400 bg-white min-h-screen shadow-md"
+    :class="{ ' border-r-white': theme === 'dark' }"
+    >
     <nav class="space-y-4  rounded-lg flex flex-col items-start px-6 pt-8">
       <!-- Home -->
       <router-link 
@@ -12,13 +14,13 @@
       </router-link>
 
       <!-- Explore -->
-      <router-link 
+      <div @click="handleSearch"
         to="/explore" 
         class="flex items-center space-x-4 px-4 py-2 rounded-lg w-full hover:bg-gray-100 dark:hover:bg-gray-700"
-        :class="{ 'active-page': $route.path === '/explore' }">
+        >
         <i class="ri-search-line text-xl"></i>
         <span class="font-medium">Explore</span>
-      </router-link>
+    </div>
 
       <!-- Notifications -->
       <router-link 
@@ -87,17 +89,27 @@
 </template>
 
 <script>
-import { computed } from "vue";
 import { useStore } from "vuex";
 
 export default {
-  setup() {
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+    search:{
+      type: Boolean,
+      required:true
+    }
+  },
+  setup(props, {emit}) {
     const store = useStore();
-
-    const darkMode = computed(() => store.state.darkMode);
+    const handleSearch = () => {
+      emit('toggle-search')
+    }
 
     return {
-      darkMode,
+      handleSearch
     };
   },
 };

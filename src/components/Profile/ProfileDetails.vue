@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4 relative background-img mb-2 border-b w-full lg:border-b-0 bg-white lg:bg-[#E5E5E5] dark:bg-[#121212] dark:text-white">
+  <div :class="{ 'dark': theme === 'dark' }" class="space-y-4 relative background-img mb-2 border-b w-full lg:border-b-0 bg-white lg:bg-gray-100 dark:bg-[#15202b] rounded-lg  dark:text-white">
     <!-- Background Image -->
     <div class="relative">
       <img
@@ -10,24 +10,24 @@
     </div>
 
     <!-- Profile Information Section -->
-    <div class="bg-white text-[#000] dark:bg-[#1f1f1f] dark:text-white rounded-lg lg:shadow-lg py-4 px-4">
+    <div class="bg-white text-black dark:bg-gray-800 dark:text-white rounded-lg lg:shadow-lg py-4 px-4">
       <div class="flex items-start justify-between">
         <!-- Profile Picture -->
         <div
-          class="relative -mt-16 flex-shrink-0"
+          class="relative -mt-16 flex-shrink-0 cursor-pointer"
           @click="showProfilePicModal = true"
         >
           <img
             :src="profile.profilePicture || defaultProfilePicture"
             alt="Profile Picture"
-            class="w-20 h-20 md:w-24 md:h-24 border-4 border-white rounded-full bg-white bg-opacity-30"
+            class="w-20 h-20 md:w-24 md:h-24 border-4 border-white rounded-full bg-white dark:bg-gray-700"
           />
         </div>
 
         <!-- Edit Profile Button -->
         <button
           @click="showEditModal = true"
-          class="bg-[#FAFAFA] hover:bg-[#f0f0f0] text-black font-medium py-2 px-4 rounded-xl dark:bg-[#333333] dark:hover:bg-[#444444] dark:text-white"
+          class="bg-gray-200 hover:bg-gray-300 text-black font-medium py-2 px-4 rounded-xl dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
         >
           Edit profile
         </button>
@@ -35,13 +35,15 @@
 
       <!-- User Details -->
       <div class="mt-2">
-        <h2 class="text-xl font-bold">{{ profile.firstName }} {{ profile.lastName }}</h2>
-        <p class="text-gray-700 text-sm dark:text-gray-400">@{{ profile.username }}</p>
-        <p class="text-gray-600 mt-2 dark:text-gray-300">{{ profile.bio }}</p>
+        <h2 
+        class="text-xl font-bold">{{ profile.firstName }} {{ profile.lastName }}</h2>
+        <p :class="{'text-gray-800': !theme, 'text-gray-100': theme}"
+          class="text-gray-600 text-sm dark:text-gray-400">@{{ profile.username }}</p>
+        <p class="text-gray-700 mt-2 dark:text-gray-300">{{ profile.bio }}</p>
       </div>
 
       <!-- Additional Info -->
-      <div class="text-[#000] text-sm mt-4 space-y-1 dark:text-gray-400">
+      <div class="text-black text-sm mt-4 space-y-1 dark:text-gray-400">
         <div class="flex items-center gap-1">
           <i class="ri-briefcase-line"></i>
           <span>{{ profile.job }}</span>
@@ -73,7 +75,7 @@
       @click.self="closeEditModal"
     >
       <div
-        class="bg-white rounded-lg shadow-lg w-full lg:w-1/2 lg:h-auto relative overflow-y-auto max-h-[90vh] modal-container dark:bg-[#2c2c2c]"
+        class="bg-white rounded-lg shadow-lg w-full lg:w-1/2 lg:h-auto relative overflow-y-auto max-h-[90vh] modal-container dark:bg-gray-800"
       >
         <!-- Close Button for Mobile -->
         <button
@@ -81,7 +83,7 @@
           @click="closeEditModal"
         >
           <i
-            class="ri-close-circle-line bg-[#FAFAFA] rounded-full text-md p-0.5 cursor-pointer dark:bg-[#444444]"
+            class="ri-close-circle-line bg-gray-200 rounded-full text-md p-0.5 cursor-pointer dark:bg-gray-600"
           ></i> 
         </button>
         <EditBio />
@@ -93,19 +95,25 @@
 <script>
 import { mapState } from 'vuex';
 import EditBio from '../Auth/EditBio.vue';
-import vector from '../../assets/images/Vector.png'
-import cover from '../../assets/images/coverpPhoto.png'
+import vector from '../../assets/images/Vector.png';
+import cover from '../../assets/images/coverpPhoto.png';
 
 export default {
   components: {
     EditBio,
+  },
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       showEditModal: false,
       showProfilePicModal: false,
       defaultProfilePicture: vector,
-      defaultBackgroundPicture: cover
+      defaultBackgroundPicture: cover,
     };
   },
   computed: {
@@ -159,7 +167,7 @@ export default {
     // Save profile data to localStorage
     saveProfileToLocalStorage() {
       localStorage.setItem('profile', JSON.stringify(this.profile));
-    }
+    },
   },
   mounted() {
     // Check if profile exists in localStorage and load it if available
@@ -171,73 +179,10 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('close-modal', this.closeEditModal);
-  }
+  },
 };
 </script>
 
 <style scoped>
-/* Ensure modal container stays centered and content scrolls inside */
-.modal-container {
-  max-height: 90vh; /* Limit modal height to 90% of viewport height */
-  overflow-y: auto; /* Add vertical scrolling for overflowing content */
-  position: relative;
-}
-
-/* Full-screen modal for mobile */
-@media (max-width: 1023px) {
-  .modal-container {
-    width: 100%;
-    height: 100%;
-  }
-}
-
-/* Transition for smooth open/close */
-.modal-container {
-  transition: transform 0.3s ease-in-out;
-}
-
-/* Dark Mode Adjustments */
-.dark .bg-[#FAFAFA] {
-  background-color: #333333;
-}
-
-.dark .text-[#000] {
-  color: white;
-}
-
-.dark .bg-[#E5E5E5] {
-  background-color: #1f1f1f;
-}
-
-.dark .border-b {
-  border-bottom-color: #444444;
-}
-
-.dark .text-gray-700 {
-  color: #bbbbbb;
-}
-
-.dark .text-gray-600 {
-  color: #aaaaaa;
-}
-
-.dark .text-gray-400 {
-  color: #888888;
-}
-
-.dark .text-blue-400 {
-  color: #4fc3f7;
-}
-
-.dark .text-blue-300 {
-  color: #80d6ff;
-}
-
-.dark .text-gray-600 {
-  color: #bbbbbb;
-}
-
-.dark .bg-white {
-  background-color: #2c2c2c;
-}
+/* No custom CSS, using Tailwind for everything */
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div 
-    :class="{ dark: darkMode }" 
+    :class="{ dark: theme ==='dark' }" 
     class="fixed top-16 left-0 w-16 h-full border border-l-0  border-r-blue-400  bg-white
     shadow-md lg:flex flex-col justify-between hidden md:block">
     <!-- Sidebar Icons -->
@@ -37,23 +37,27 @@
         class="cursor-pointer p-2 rounded-md"
         @click="logout">
         <i class="ri-logout-box-r-line text-2xl"
-           :class="{'text-gray-700': !darkMode, 'text-white': darkMode}"></i>
+           :class="{'text-gray-700': !theme, 'text-white': theme}"></i>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
 export default {
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+  },
   setup() {
     const router = useRouter();
     const store = useStore();
 
-    const darkMode = computed(() => store.state.darkMode);
 
     const navigateToHome = () => {
       router.push('/home'); // Adjust based on your route
@@ -78,7 +82,7 @@ export default {
       navigateToMessages,
       navigateToNotifications,
       logout,
-      darkMode,
+      
     };
   },
 };

@@ -3,7 +3,10 @@ import { createStore } from 'vuex';
 // Get stored data or fallback to default values
 const storedProfile = JSON.parse(localStorage.getItem('profile') || '{}');
 const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
+
 const storedFilter = localStorage.getItem('filter') || 'all';
+const storedDarkMode = localStorage.getItem('darkMode') === 'true';  // Load dark mode state from localStorage
+
 
 // Set default dateOfBirth if not present
 if (!storedProfile.dateOfBirth) {
@@ -43,6 +46,8 @@ export interface State {
   
 };
 
+const validPosts = storedPosts.filter((post: Post) => post.id && post.content);
+localStorage.setItem('posts', JSON.stringify(validPosts));
 
 export default createStore<State>({
   state: {
@@ -131,6 +136,7 @@ export default createStore<State>({
     },
     toggleDarkMode({ commit }) {
       commit('toggleDarkMode');
+      
     },
   },
 });

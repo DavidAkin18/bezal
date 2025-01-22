@@ -1,8 +1,8 @@
 <template>
-  <div :class="{ dark: darkMode }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-800">
-    <h1 class="text-2xl font-bold text-gray-700 dark:text-white mb-4">Notifications</h1>
+  <div :class="theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'" class="p-6 min-h-screen">
+    <h1 class="text-2xl font-bold mb-4">Notifications</h1>
 
-    <div v-if="notifications.length === 0" class="text-gray-500 dark:text-gray-400">
+    <div v-if="notifications.length === 0" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'">
       No notifications yet.
     </div>
 
@@ -10,7 +10,8 @@
       <li
         v-for="notification in notifications"
         :key="notification.id"
-        class="p-4 rounded-lg bg-white dark:bg-gray-700 shadow-md flex items-start space-x-4 cursor-pointer"
+        :class="theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-white text-gray-700'"
+        class="p-4 rounded-lg shadow-md flex items-start space-x-4 cursor-pointer"
         @click="viewPost(notification.postId)"
       >
         <div class="flex-shrink-0">
@@ -24,12 +25,14 @@
           ></i>
         </div>
         <div>
-          <p class="text-gray-700 dark:text-gray-300">
+          <p>
             <span class="font-bold">{{ notification.message }}</span>
             <span v-if="notification.postContent" class="block text-sm italic">
               "{{ notification.postContent }}"
             </span>
-            <span class="text-gray-500 dark:text-gray-400 text-sm block">{{ notification.time }}</span>
+            <span :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" class="text-sm block">
+              {{ notification.time }}
+            </span>
           </p>
         </div>
       </li>
@@ -44,11 +47,15 @@ import { useRouter } from "vue-router";
 
 export default {
   name: "Notification",
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
-
-    const darkMode = computed(() => store.state.darkMode);
 
     // Deriving notifications from posts, comments, and likes
     const notifications = computed(() => {
@@ -100,7 +107,7 @@ export default {
             type: "like",
             message: `${like.username || "Someone"} liked your post.`,
             time: new Date(like.createdAt).toLocaleString(),
-            postId: like.postId,
+            postId: like.id, // Corrected postId to like.postId
           });
         });
       }
@@ -113,7 +120,6 @@ export default {
     };
 
     return {
-      darkMode,
       notifications,
       viewPost,
     };
@@ -122,33 +128,6 @@ export default {
 </script>
 
 <style scoped>
-/* General Styles */
-.dark {
-  background-color: #2d3748;
-  color: #ffffff;
-}
-
-.dark .bg-white {
-  background-color: #4a5568;
-}
-
-.dark .text-gray-700 {
-  color: #edf2f7;
-}
-
-.dark .text-gray-500 {
-  color: #a0aec0;
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.cursor-pointer:hover {
-  background-color: #f7fafc;
-}
-
-.dark .cursor-pointer:hover {
-  background-color: #2c5282;
-}
+/* No custom CSS - using Tailwind utilities */
 </style>
+

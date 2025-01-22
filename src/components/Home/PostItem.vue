@@ -1,7 +1,7 @@
 <template>
   <div 
-    :class="{'bg-white': !darkMode, 'bg-gray-900 border-white': darkMode}"
-    class="bg-white w-full p-4 lg:border border-blue-400 shadow">
+    :class="theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'"
+    class="w-full p-4">
     <!-- Post Header (User Info) -->
     <div v-if="post" class="flex items-center space-x-4">
       <img 
@@ -9,23 +9,33 @@
         :src="profile?.profilePicture || 'https://via.placeholder.com/40'" 
         alt="User avatar" 
       />
-      <div class="flex gap-2 items-center">
-        <h3 :class="darkMode ? ' text-[#ffffff]' : ' text-gray-500'" 
-          class="font-bold text-lg">{{ profile?.username || '' }}
-        </h3>
-        <p :class="darkMode ? ' text-[#f5f5f5]' : ' text-gray-500'" 
-          class="text-gray-500 text-sm">@{{ profile.lastName + profile.firstName }}
-        </p>
-        <p :class="darkMode ? ' text-gray-100' : ' text-gray-500'" 
-          class="text-gray-500 text-sm">{{ formattedTime }}
+      <div class="flex gap-2 items-start">
+        <div>
+          <h3 
+            :class="theme === 'dark' ? ' text-white' : ' text-gray-700'"
+            class="font-bold text-lg">
+            {{ profile?.username || '' }}
+          </h3>
+          <p 
+            :class="theme === 'dark' ? ' text-white' : ' text-gray-700'"
+            class="text-sm">
+            @{{ profile.lastName + profile.firstName }}
+          </p>
+        </div>
+        <p 
+          :class="theme === 'dark' ? ' text-white' : ' text-gray-700'"
+          class="text-sm">
+          {{ formattedTime }}
         </p>
       </div>
     </div>
 
-    <div class="pl-10">
+    <!-- Post Content -->
+    <div class="pl-16">
       <p 
-        :class="darkMode ? ' text-[#FFFFFF]' : ' text-gray-500'"
-        class="mt-4 text-gray-700 text-base">{{ post.content }}
+        :class="theme === 'dark' ? ' text-white' : ' text-gray-700'"
+        class="mt-4 text-sm">
+        {{ post.content }}
       </p>
 
       <!-- Post Images -->
@@ -35,41 +45,52 @@
           :key="index"
           :src="image"
           alt="Post image"
-          class="w-full rounded-lg object-contain cursor-pointer"
+          class="w-full rounded-lg object-cover cursor-pointer"
           @click="openImageModal(index)"
         />
       </div>
 
       <!-- Post Videos -->
-      <div v-if="post.videos && post.videos.length" class="mt-4 grid grid-cols-1 gap-2">
-        <div v-for="(video, index) in post.videos" :key="index" class="relative">
-          <video 
-            :src="video"
-            controls
-            class="w-full h-auto rounded-lg cursor-pointer"
-            @click="openVideoModal(index)"
-          />
-        </div>
+      <div v-if="post.videos && post.videos.length" class="mt-4">
+        <video 
+          v-for="(video, index) in post.videos"
+          :key="index"
+          :src="video"
+          controls
+          class="w-full rounded-lg object-cover cursor-pointer mt-2"
+          @click="openVideoModal(index)"
+        ></video>
       </div>
 
       <!-- Post Actions -->
-      <div class="flex justify-between items-center text-gray-500 mt-4">
-        <button @click="likePost" class="flex items-center space-x-2 hover:text-blue-500">
-          <i class="ri-heart-fill text-xl" :class="{'text-red-500': liked}"></i>
+      <div 
+        class="flex justify-between items-center mt-4"
+        :class="{'text-gray-600': !theme, 'text-gray-400': theme}">
+        <button 
+          @click="likePost" 
+          class="flex items-center space-x-2 hover:text-blue-500">
+          <i :class="{'text-red-500': liked}" class="ri-heart-fill text-xl"></i>
           <span>{{ likes }}</span>
         </button>
 
-        <button v-if="!showComments.value"  @click="toggleComments" class="flex items-center space-x-2 hover:text-blue-500">
-          <i class="ri-chat-3-line text-xl"></i>
+        <button 
+          v-if="!showComments.value"  
+          @click="toggleComments" 
+          class="flex items-center space-x-2 hover:text-blue-500">
+          <i class="ri-chat-3-line text-xl" :class="theme === 'dark' ? ' text-white' : ' text-gray-700'"></i>
           <span>{{ comments?.length || 0 }}</span>
         </button>
 
-        <button @click="visible = !visible" class="flex items-center space-x-2 hover:text-blue-500">
-          <i class="ri-share-forward-line text-xl"></i>
+        <button 
+          @click="visible = !visible" 
+          class="flex items-center space-x-2 hover:text-blue-500">
+          <i class="ri-share-forward-line text-xl" :class="theme === 'dark' ? ' text-white' : ' text-gray-700'"></i>
         </button>
 
-        <button @click="deletePost" class="flex items-center space-x-2 text-red-500 hover:text-red-600">
-          <i class="ri-delete-bin-line text-xl"></i>
+        <button 
+          @click="deletePost" 
+          class="flex items-center space-x-2 text-red-500 hover:text-red-600">
+          <i class="ri-delete-bin-line text-xl" ></i>
         </button>
       </div>
 
@@ -82,15 +103,14 @@
         @addComment="addComment"
         @deleteComment="deleteComment"
         @likeComment="likeComment"
-     
         :showComments="showComments"
         @toggleComments="toggleComments"
       />
 
       <!-- Image/Video Modal -->
-      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" @click="closeModalOnOutsideClick">
-        <div class="relative max-w-4xl w-full" @click.stop>
-          <button @click="closeModal" class="absolute top-4 right-4 p-2 text-blue-800 text-2xl">&times;</button>
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+        <div class="relative max-w-4xl w-full">
+          <button @click="closeModal" class="absolute top-4 right-4 p-2 text-gray-100 text-2xl">&times;</button>
 
           <!-- Displaying Image or Video -->
           <div v-if="currentMedia.type === 'image'">
@@ -105,31 +125,29 @@
               :src="currentMedia.src"
               controls
               class="w-full h-auto rounded-lg"
-            />
+            ></video>
           </div>
 
           <!-- Previous and Next Buttons -->
           <button 
             v-if="currentIndex > 0"
             @click="prevMedia"
-            class="absolute top-1/2 left-4 transform -translate-y-1/2 text-white text-3xl bg-black bg-opacity-50 rounded-full p-2 cursor-pointer"
-          >
+            class="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-100 text-3xl bg-black bg-opacity-50 rounded-full p-2">
             ←
           </button>
           
           <button 
             v-if="currentIndex < totalMedia - 1"
             @click="nextMedia"
-            class="absolute top-1/2 right-4 transform -translate-y-1/2 text-white text-3xl bg-black bg-opacity-50 rounded-full p-2 cursor-pointer"
-          >
+            class="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-100 text-3xl bg-black bg-opacity-50 rounded-full p-2">
             →
           </button>
 
-          <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 text-white py-2 text-center">
+          <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 text-gray-100 py-2 text-center">
             <span>{{ currentIndex + 1 }} / {{ totalMedia }}</span>
           </div>
         </div>
-        <div @click="closeModal" class="absolute bottom-0 left-0 w-full text-center text-white bg-black bg-opacity-50 py-3 cursor-pointer">
+        <div @click="closeModal" class="absolute bottom-0 left-0 w-full text-center text-gray-100 bg-black bg-opacity-50 py-3 cursor-pointer">
           Swipe up to close
         </div>
       </div>
@@ -138,10 +156,12 @@
         :postId="post.id" 
         :isVisible="visible" 
         @update:isVisible="visible = $event"
+        :theme="theme"
       />
     </div>
   </div>
 </template>
+
 
 <script>
 import { computed, ref, onMounted } from "vue";
@@ -152,7 +172,14 @@ import CommentSection from "./CommentSection.vue";
 export default {
   components: { SharePostModal, CommentSection },
   props: {
-    post: { type: Object, required: true },
+    post: { 
+      type: Object, 
+      required: true 
+    },
+    theme: {
+      type: String,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const visible = ref(false);
@@ -169,22 +196,25 @@ export default {
     const profile = computed(() => store.state.profile);
 
     const formattedTime = computed(() => {
-      if (!props.post.createdAt) {
-        return "Unknown time"; 
-      }
+      // Use `timestamp` if `createdAt` is missing or invalid
+      const postTime = new Date(props.post.createdAt || props.post.timestamp);
 
-      const createdAt = new Date(props.post.createdAt);
-      if (isNaN(createdAt.getTime())) {
-        return "Invalid date"; 
+      if (isNaN(postTime.getTime())) {
+        return "Unknown time"; // Fallback for invalid date
       }
 
       const now = new Date();
-      const diff = Math.floor((now - createdAt) / 1000); 
+      const diffInSeconds = Math.floor((now - postTime) / 1000);
 
-      if (diff < 60) return `${diff}s ago`;
-      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-      return `${Math.floor(diff / 86400)}d ago`;
+      if (diffInSeconds < 60) {
+        return `${diffInSeconds}s ago`;
+      } else if (diffInSeconds < 3600) {
+        return `${Math.floor(diffInSeconds / 60)}m ago`;
+      } else if (diffInSeconds < 86400) {
+        return `${Math.floor(diffInSeconds / 3600)}h ago`;
+      } else {
+        return `${Math.floor(diffInSeconds / 86400)}d ago`;
+      }
     });
 
     const localStorageKey = `post-${props.post.id}`;
@@ -233,9 +263,9 @@ export default {
 
     const deletePost = () => {
       emit("delete-post", props.post.id); 
+      localStorage.removeItem(localStorageKey);
     };
     
-
     onMounted(() => {
       loadFromLocalStorage();
     });
@@ -261,8 +291,6 @@ export default {
         currentMedia.value = { type: "video", src: props.post.videos[currentIndex.value - props.post.images.length] };
       }
     };
-    const darkMode = computed(()=> store.state.darkMode);
-
 
     return {
       likes,
@@ -280,11 +308,11 @@ export default {
       currentIndex,
       currentMedia,
       visible,
-      darkMode,
     };
   },
 };
 </script>
+
 
 <style scoped>
 button:hover {
